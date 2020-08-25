@@ -6,7 +6,7 @@ FROM openjdk:8-jre-alpine
 LABEL maintainer="contact@liwei.email"
 WORKDIR /apollo-configservice
 
-ENV VERSION 1.6.0
+ENV VERSION 1.7.1
 ENV SERVER_PORT 8080
 # DataSource Info
 ENV DS_URL ""

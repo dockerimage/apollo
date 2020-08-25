@@ -1,4 +1,5 @@
-FROM adoptopenjdk/openjdk11:jdk-11.0.6_10-alpine-slim
+#FROM adoptopenjdk/openjdk11:jdk-11.0.6_10-alpine-slim
+FROM adoptopenjdk:11.0.8_10-jre-openj9-0.21.0-bionic
 LABEL maintainer="contact@liwei.email"
 WORKDIR /apollo-portal
 
@@ -15,10 +16,10 @@ ENV UAT_META ""
 ENV LPT_META ""
 ENV PRO_META ""
 
-RUN echo "http://mirrors.aliyun.com/alpine/v3.11/main" > /etc/apk/repositories \
-    && echo "http://mirrors.aliyun.com/alpine/v3.11/community" >> /etc/apk/repositories \
-    && apk update upgrade \
-    && apk add --no-cache procps unzip curl bash tzdata \
+RUN sed -i 's/archive.ubuntu.com/mirrors.aliyun.com/g' /etc/apt/sources.list \
+    && apt-get update \
+    && apt-get install -y wget ca-certificates unzip \
+    && apt-get clean \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone
 RUN wget https://github.com/ctripcorp/apollo/releases/download/v${VERSION}/apollo-portal-${VERSION}-github.zip \
@@ -27,8 +28,8 @@ RUN wget https://github.com/ctripcorp/apollo/releases/download/v${VERSION}/apoll
     && rm -rf /apollo-portal/apollo-portal-${VERSION}-sources.jar \
     && sed -i '$d' /apollo-portal/scripts/startup.sh \
     && chmod +x /apollo-portal/scripts/startup.sh \
-    && echo -e >> /apollo-portal/scripts/startup.sh
-    && echo -e "tail -f /dev/null" >> /apollo-portal/scripts/startup.sh
+    && echo -e >> /apollo-portal/scripts/startup.sh \
+    && echo "tail -f /dev/null" >> /apollo-portal/scripts/startup.sh
 
 EXPOSE $SERVER_PORT
 
